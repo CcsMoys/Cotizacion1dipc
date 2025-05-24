@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propuesta Interactiva - Sistema de Seguridad</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4285F4;
+            --secondary: #34A853;
+            --accent: #EA4335;
+        }
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            background: linear-gradient(135deg, #4285F4, #34A853);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .tab-container {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #f1f1f1;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+        }
+        .tab.active {
+            background: var(--primary);
+            color: white;
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #3367D6;
+        }
+        .comparison-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        .comparison-box {
+            width: 45%;
+            min-width: 300px;
+            margin: 10px;
+        }
+        .package-selector {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+        }
+        .package {
+            width: 30%;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .package:hover {
+            transform: scale(1.05);
+        }
+        .package.basic {
+            border: 2px solid #ddd;
+        }
+        .package.standard {
+            border: 2px solid var(--primary);
+            background-color: #E8F0FE;
+        }
+        .package.premium {
+            border: 2px solid var(--secondary);
+            background-color: #E6F4EA;
+        }
+        .package.selected {
+            box-shadow: 0 0 0 3px var(--accent);
+        }
+        .feature-list li {
+            margin-bottom: 10px;
+            position: relative;
+            padding-left: 25px;
+        }
+        .feature-list li:before {
+            content: "✓";
+            color: var(--secondary);
+            position: absolute;
+            left: 0;
+        }
+        .calculator {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .calculator input, .calculator select {
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .timeline {
+            position: relative;
+            padding-left: 50px;
+            margin: 30px 0;
+        }
+        .timeline-step {
+            position: relative;
+            margin-bottom: 30px;
+        }
+        .timeline-step:before {
+            content: "";
+            position: absolute;
+            left: -30px;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+        }
+        .timeline-step:after {
+            content: "";
+            position: absolute;
+            left: -21px;
+            top: 20px;
+            width: 2px;
+            height: calc(100% + 10px);
+            background: #ddd;
+        }
+        .timeline-step:last-child:after {
+            display: none;
+        }
+        .signature-pad {
+            border: 1px dashed #ccc;
+            margin: 20px 0;
+            height: 100px;
+            background: white;
+        }
+        @media (max-width: 768px) {
+            .package-selector {
+                flex-direction: column;
+            }
+            .package {
+                width: 100%;
+                margin-bottom: 15px;
+            }
+            .comparison-box {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Propuesta de Sistema de Seguridad CCTV</h1>
+    <p>Protección inteligente para su hogar con tecnología de última generación</p>
+</div>
+
+<div class="tab-container">
+    <div class="tab active" onclick="openTab('propuesta')">Propuesta</div>
+    <div class="tab" onclick="openTab('cotizacion')">Cotización Interactiva</div>
+    <div class="tab" onclick="openTab('tecnico')">Detalles Técnicos</div>
+</div>
+
+<!-- Pestaña de Propuesta -->
+<div id="propuesta" class="tab-content active">
+    <div class="card">
+        <h2>Su Solución de Seguridad Personalizada</h2>
+        <p>Hemos diseñado un sistema completo basado en sus necesidades específicas:</p>
+        
+        <div class="package-selector">
+            <div class="package basic" onclick="selectPackage('basic')">
+                <h3>Básico</h3>
+                <p>4 Cámaras</p>
+                <p>1TB Almacenamiento</p>
+                <p>Grabación por movimiento</p>
+                <p class="price">$XXX</p>
+            </div>
+            <div class="package standard selected" onclick="selectPackage('standard')">
+                <h3>Estándar</h3>
+                <p>6 Cámaras</p>
+                <p>4TB Almacenamiento</p>
+                <p>Visión nocturna en color</p>
+                <p class="price">$XXXX</p>
+            </div>
+            <div class="package premium" onclick="selectPackage('premium')">
+                <h3>Premium</h3>
+                <p>8 Cámaras</p>
+                <p>8TB Almacenamiento</p>
+                <p>Reconocimiento facial</p>
+                <p class="price">$XXXX</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Beneficios Clave</h2>
+        <div class="comparison-container">
+            <div class="comparison-box">
+                <h3>Nuestro Sistema</h3>
+                <ul class="feature-list">
+                    <li>Visión nocturna en color</li>
+                    <li>Detección inteligente de movimiento</li>
+                    <li>Notificaciones en tiempo real</li>
+                    <li>Acceso remoto desde cualquier dispositivo</li>
+                    <li>Grabación continua 24/7</li>
+                </ul>
+            </div>
+            <div class="comparison-box">
+                <h3>Sistemas Convencionales</h3>
+                <ul class="feature-list" style="color: #666;">
+                    <li>Visión nocturna B/N</li>
+                    <li>Detección básica de movimiento</li>
+                    <li>Sin notificaciones</li>
+                    <li>Acceso limitado</li>
+                    <li>Grabación por eventos</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>¿Cómo Funciona?</h2>
+        <div class="timeline">
+            <div class="timeline-step">
+                <h3>1. Evaluación Inicial</h3>
+                <p>Nuestro técnico visita su propiedad para determinar las mejores ubicaciones para las cámaras.</p>
+            </div>
+            <div class="timeline-step">
+                <h3>2. Instalación Profesional</h3>
+                <p>Instalación limpia con cableado oculto donde sea posible.</p>
+            </div>
+            <div class="timeline-step">
+                <h3>3. Configuración Personalizada</h3>
+                <p>Ajustamos el sistema según sus necesidades específicas.</p>
+            </div>
+            <div class="timeline-step">
+                <h3>4. Capacitación</h3>
+                <p>Le enseñamos cómo usar todas las funciones del sistema.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pestaña de Cotización -->
+<div id="cotizacion" class="tab-content">
+    <div class="card">
+        <h2>Cotización Interactiva</h2>
+        
+        <div class="calculator">
+            <h3>Personalice su Sistema</h3>
+            
+            <label for="camera-count">Número de Cámaras:</label>
+            <input type="range" id="camera-count" min="1" max="8" value="4" oninput="updateQuote()">
+            <span id="camera-count-display">4</span>
+            
+            <label for="storage">Almacenamiento:</label>
+            <select id="storage" onchange="updateQuote()">
+                <option value="1">1TB (7 días de grabación)</option>
+                <option value="2" selected>2TB (14 días de grabación)</option>
+                <option value="4">4TB (30 días de grabación)</option>
+                <option value="8">8TB (60 días de grabación)</option>
+            </select>
+            
+            <label for="installation">Tipo de Instalación:</label>
+            <select id="installation" onchange="updateQuote()">
+                <option value="basic">Básica (cableado visible)</option>
+                <option value="standard" selected>Estándar (cableado oculto donde sea posible)</option>
+                <option value="premium">Premium (cableado totalmente oculto)</option>
+            </select>
+            
+            <h3>Resumen de Costos</h3>
+            <table style="width:100%; margin: 20px 0;">
+                <tr>
+                    <td>Cámaras (4 x $XXX)</td>
+                    <td id="cameras-cost">$XXX</td>
+                </tr>
+                <tr>
+                    <td>NVR</td>
+                    <td>$XXX</td>
+                </tr>
+                <tr>
+                    <td>Almacenamiento (4TB)</td>
+                    <td id="storage-cost">$XXX</td>
+                </tr>
+                <tr>
+                    <td>Instalación</td>
+                    <td id="installation-cost">$XXX</td>
+                </tr>
+                <tr>
+                    <td><strong>Total</strong></td>
+                    <td id="total-cost"><strong>$XXXX</strong></td>
+                </tr>
+            </table>
+            
+            <div style="background-color: #FFF8E1; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                <h3>Oferta Especial</h3>
+                <p>¡Aprobando hoy obtiene un <strong>10% de descuento</strong> y <strong>instalación en 48 horas</strong>!</p>
+                <p id="discounted-price" style="font-size: 24px; color: var(--accent);">Total con descuento: <strong>$XXXX</strong></p>
+            </div>
+            
+            <button class="btn" onclick="showApprovalForm()">Aprobar esta Cotización</button>
+        </div>
+    </div>
+    
+    <div id="approval-form" style="display:none;">
+        <div class="card">
+            <h2>Formulario de Aprobación</h2>
+            <p>Por favor complete los siguientes datos para proceder con la instalación:</p>
+            
+            <form>
+                <label for="name">Nombre Completo:</label>
+                <input type="text" id="name" required>
+                
+                <label for="email">Correo Electrónico:</label>
+                <input type="email" id="email" required>
+                
+                <label for="phone">Teléfono:</label>
+                <input type="tel" id="phone" required>
+                
+                <label for="address">Dirección de Instalación:</label>
+                <textarea id="address" required></textarea>
+                
+                <label>Firma de Aprobación:</label>
+                <div class="signature-pad" id="signature-pad"></div>
+                <button type="button" onclick="clearSignature()">Limpiar Firma</button>
+                
+                <div style="margin-top: 20px;">
+                    <input type="checkbox" id="terms" required>
+                    <label for="terms">Acepto los términos y condiciones del servicio</label>
+                </div>
+                
+                <button type="submit" class="btn" style="margin-top: 20px;">Enviar Aprobación</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Pestaña de Detalles Técnicos -->
+<div id="tecnico" class="tab-content">
+    <div class="card">
+        <h2>Especificaciones Técnicas</h2>
+        
+        <h3>Equipos Incluidos</h3>
+        <div style="overflow-x:auto;">
+            <table>
+                <tr>
+                    <th>Componente</th>
+                    <th>Especificaciones</th>
+                    <th>Beneficio</th>
+                </tr>
+                <tr>
+                    <td>Cámara Domo ColorVu</td>
+                    <td>2MP, Visión Nocturna en Color, IK10, IP67</td>
+                    <td>Identificación precisa día y noche</td>
+                </tr>
+                <tr>
+                    <td>NVR 8 Canales</td>
+                    <td>4K, 8 Puertos PoE, H.265+</td>
+                    <td>Máxima eficiencia de almacenamiento</td>
+                </tr>
+                <tr>
+                    <td>Disco WD Purple</td>
+                    <td>4TB, AllFrame 4K</td>
+                    <td>Grabación continua sin fallos</td>
+                </tr>
+            </table>
+        </div>
+        
+        <h3 style="margin-top: 30px;">Rendimiento del Sistema</h3>
+        <div style="width: 100%; height: 300px;">
+            <canvas id="storageChart"></canvas>
+        </div>
+        
+        <h3 style="margin-top: 30px;">Garantías y Soporte</h3>
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+            <div style="width: 30%; min-width: 200px; background: #E8F0FE; padding: 15px; border-radius: 5px; margin: 10px 0;">
+                <h4>Equipos</h4>
+                <p style="font-size: 24px; color: var(--primary);">3 Años</p>
+            </div>
+            <div style="width: 30%; min-width: 200px; background: #E6F4EA; padding: 15px; border-radius: 5px; margin: 10px 0;">
+                <h4>Instalación</h4>
+                <p style="font-size: 24px; color: var(--secondary);">1 Año</p>
+            </div>
+            <div style="width: 30%; min-width: 200px; background: #FEEFC3; padding: 15px; border-radius: 5px; margin: 10px 0;">
+                <h4>Soporte Remoto</h4>
+                <p style="font-size: 24px; color: #FBBC05;">6 Meses</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h2>Preguntas Frecuentes</h2>
+        
+        <div style="margin-bottom: 15px;">
+            <h4>¿Puedo expandir el sistema en el futuro?</h4>
+            <p>Sí, el NVR soporta hasta 8 cámaras y puede agregar más almacenamiento fácilmente.</p>
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+            <h4>¿Qué pasa si hay un corte de energía?</h4>
+            <p>Recomendamos agregar una UPS (no incluida) para mantener el sistema funcionando durante cortes.</p>
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+            <h4>¿Cómo accedo a las cámaras desde mi celular?</h4>
+            <p>Le instalaremos la aplicación Hik-Connect y la configuraremos durante la instalación.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Funciones básicas para la interactividad
+    function openTab(tabName) {
+        const tabs = document.getElementsByClassName('tab');
+        const tabContents = document.getElementsByClassName('tab-content');
+        
+        for (let tab of tabs) {
+            tab.classList.remove('active');
+        }
+        
+        for (let content of tabContents) {
+            content.classList.remove('active');
+        }
+        
+        document.getElementById(tabName).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+    
+    function selectPackage(pkg) {
+        const packages = document.getElementsByClassName('package');
+        for (let p of packages) {
+            p.classList.remove('selected');
+        }
+        event.currentTarget.classList.add('selected');
+        
+        // Actualizar la cotización según el paquete seleccionado
+        updateQuote();
+    }
+    
+    function updateQuote() {
+        const cameraCount = document.getElementById('camera-count').value;
+        document.getElementById('camera-count-display').textContent = cameraCount;
+        
+        // Cálculos de ejemplo (reemplazar con valores reales)
+        const cameraPrice = 150;
+        const storagePrice = document.getElementById('storage').value * 50;
+        const installationType = document.getElementById('installation').value;
+        let installationPrice = 200;
+        
+        if (installationType === 'basic') installationPrice = 150;
+        if (installationType === 'premium') installationPrice = 300;
+        
+        const subtotal = (cameraCount * cameraPrice) + storagePrice + installationPrice + 300; // +300 por el NVR
+        const discount = subtotal * 0.1;
+        const total = subtotal - discount;
+        
+        // Actualizar la visualización
+        document.getElementById('cameras-cost').textContent = '$' + (cameraCount * cameraPrice);
+        document.getElementById('storage-cost').textContent = '$' + storagePrice;
+        document.getElementById('installation-cost').textContent = '$' + installationPrice;
+        document.getElementById('total-cost').innerHTML = '<strong>$' + subtotal + '</strong>';
+        document.getElementById('discounted-price').innerHTML = 'Total con descuento: <strong>$' + total + '</strong>';
+    }
+    
+    function showApprovalForm() {
+        document.getElementById('approval-form').style.display = 'block';
+        window.location.href = '#approval-form';
+        
+        // Inicializar el pad de firma (simulado para este ejemplo)
+        const pad = document.getElementById('signature-pad');
+        pad.innerHTML = '<p style="text-align:center;color:#666;">Dibuje su firma aquí</p>';
+    }
+    
+    function clearSignature() {
+        document.getElementById('signature-pad').innerHTML = '<p style="text-align:center;color:#666;">Dibuje su firma aquí</p>';
+    }
+    
+    // Inicializar el gráfico de almacenamiento
+    document.addEventListener('DOMContentLoaded', function() {
+        updateQuote();
+        
+        const ctx = document.getElementById('storageChart').getContext('2d');
+        const storageChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['1 Cámara', '2 Cámaras', '4 Cámaras', '8 Cámaras'],
+                datasets: [{
+                    label: 'Días de grabación (4TB)',
+                    data: [120, 60, 30, 15],
+                    backgroundColor: [
+                        'rgba(66, 133, 244, 0.7)',
+                        'rgba(66, 133, 244, 0.7)',
+                        'rgba(66, 133, 244, 0.7)',
+                        'rgba(66, 133, 244, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(66, 133, 244, 1)',
+                        'rgba(66, 133, 244, 1)',
+                        'rgba(66, 133, 244, 1)',
+                        'rgba(66, 133, 244, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Días de grabación'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Configuración del sistema'
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
